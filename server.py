@@ -37,6 +37,7 @@ def handle_client(client_socket, addr):
         pass
     clients[client_socket] = nickname
     broadcast(f"[SYSTEM] {nickname} joined the chat")
+    print(f"{nickname} joined the chat")
     while server_running:
         try:
             message = client_socket.recv(1024).decode()
@@ -53,6 +54,7 @@ def handle_client(client_socket, addr):
         del clients[client_socket]
     client_socket.close()
     broadcast(f"[SYSTEM] {nickname} left the chat")
+    print(f"{nickname} left the chat")
 
 def server_menu():
     global server_password
