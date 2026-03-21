@@ -73,7 +73,9 @@ def server_menu():
 
 def start_server():
     global server
+    
     try:
+        print("Server started, port - 1234")
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind(("0.0.0.0", 1234))
         server.listen()
