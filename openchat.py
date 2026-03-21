@@ -12,7 +12,7 @@ def listen(sock):
 
 server_ip = input("IP: ")
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect((server_ip, 12345))
+sock.connect((server_ip, 24))
 
 threading.Thread(target=listen, args=(sock,), daemon=True).start()
 
