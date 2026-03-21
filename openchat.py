@@ -58,7 +58,6 @@ def connect_to_server(config):
         pass
     sock.send(f"/nick {config['nickname']}".encode())
     threading.Thread(target=listen, args=(sock,), daemon=True).start()
-    print(f"Connected as {config['nickname']}")
     session = PromptSession("> ")
     with patch_stdout():
         while True:
@@ -74,7 +73,6 @@ def connect_to_server(config):
     sock.close()
 
 def settings_menu(config):
-    print("=== Settings ===")
     ip = input("Enter server IP: ")
     nickname = input("Enter your nickname: ")
     password = input("Enter server password (if any): ")
@@ -82,7 +80,6 @@ def settings_menu(config):
     config["nickname"] = nickname
     config["password"] = password
     save_config(config)
-    print("Saved!")
 
 def main():
     config = load_config()
@@ -99,8 +96,6 @@ def main():
             config = load_config()
         elif choice == "0":
             break
-        else:
-            print("Error")
 
 if __name__ == "__main__":
     main()

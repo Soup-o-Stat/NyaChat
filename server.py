@@ -6,7 +6,6 @@ server_running = True
 server = None
 server_password = ""
 
-
 def broadcast(message, exclude=None):
     for client in list(clients.keys()):
         if client != exclude:
@@ -17,7 +16,6 @@ def broadcast(message, exclude=None):
 
 def handle_client(client_socket, addr):
     global clients
-
     if server_password:
         try:
             client_socket.send("[SYSTEM] Enter server password: ".encode())
@@ -26,6 +24,8 @@ def handle_client(client_socket, addr):
                 client_socket.send("[SYSTEM] Wrong password, disconnecting.".encode())
                 client_socket.close()
                 return
+            else:
+                client_socket.send("[SYSTEM] Password OK".encode())
         except:
             return
     nickname = str(addr)
@@ -36,7 +36,6 @@ def handle_client(client_socket, addr):
     except:
         pass
     clients[client_socket] = nickname
-    print(f"{nickname} connected")
     broadcast(f"[SYSTEM] {nickname} joined the chat")
     while server_running:
         try:
@@ -45,14 +44,11 @@ def handle_client(client_socket, addr):
                 break
             if message.strip().lower() == "/list":
                 user_list = "\n".join(clients.values())
-                client_socket.send(
-                    f"[SYSTEM] Online users ({len(clients)}):\n{user_list}".encode()
-                )
+                client_socket.send(f"[SYSTEM] Online users ({len(clients)}):\n{user_list}".encode())
                 continue
             broadcast(f"{nickname}: {message}", exclude=client_socket)
         except:
             break
-    print(f"{nickname} disconnected")
     if client_socket in clients:
         del clients[client_socket]
     client_socket.close()
@@ -70,12 +66,9 @@ def server_menu():
         return True
     elif choice == "2":
         server_password = input("Enter new server password (empty = no password): ").strip()
-        print(f"Password set: {'<none>' if server_password == '' else server_password}")
     elif choice == "0":
         server_running = False
         return False
-    else:
-        print("Invalid choice")
     return server_menu()
 
 def start_server():
@@ -84,18 +77,12 @@ def start_server():
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind(("0.0.0.0", 1234))
         server.listen()
-        print("Server started. Port - 1234")
         while server_running:
             client_socket, addr = server.accept()
-            threading.Thread(
-                target=handle_client,
-                args=(client_socket, addr),
-                daemon=True
-            ).start()
+            threading.Thread(target=handle_client, args=(client_socket, addr), daemon=True).start()
     except KeyboardInterrupt:
-        print("\nShutting down server...")
+        pass
     finally:
-        print("Closing connections...")
         for c in list(clients.keys()):
             try:
                 c.close()
@@ -106,7 +93,6 @@ def start_server():
                 server.close()
             except:
                 pass
-        print("Server stopped")
 
 if __name__ == "__main__":
     if server_menu():
