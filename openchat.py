@@ -1,25 +1,86 @@
 import socket
 import threading
+import json
+import os
+import winsound
+
+CONFIG_FILE = "config.json"
+SOUND_FILE = "sounds//received.wav"
+
+def load_config():
+    if not os.path.exists(CONFIG_FILE):
+        return {"ip": "", "nickname": "anon"}
+    with open(CONFIG_FILE, "r") as f:
+        return json.load(f)
+
+def save_config(config):
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f, indent=4)
+
+def play_sound():
+    try:
+        winsound.PlaySound(SOUND_FILE, winsound.SND_FILENAME | winsound.SND_ASYNC)
+    except:
+        pass
 
 def listen(sock):
     while True:
         try:
             msg = sock.recv(1024).decode()
             if msg:
-                print("\n" + msg)
+                print(msg)
+                play_sound()
         except:
             break
 
-server_ip = input("IP: ")
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect((server_ip, 24))
+def connect_to_server(config):
+    if not config["ip"]:
+        print("IP is not set")
+        return
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.connect((config["ip"], 1234))
+    except:
+        print("Couldn't connect")
+        return
+    sock.send(f"/nick {config['nickname']}".encode())
+    threading.Thread(target=listen, args=(sock,), daemon=True).start()
+    print(f"Connected as {config['nickname']}")
+    while True:
+        message = input("")
+        if message.lower() == "/exit":
+            break
+        sock.send(message.encode())
+        if message.lower() == "/help":
+            print("\n/help - commands\n/list - users\n/exit - exit\n")
+    sock.close()
 
-threading.Thread(target=listen, args=(sock,), daemon=True).start()
+def settings_menu(config):
+    print("=== Settings ===")
+    ip = input("Enter server IP: ")
+    nickname = input("Enter your nickname: ")
+    config["ip"] = ip
+    config["nickname"] = nickname
+    save_config(config)
+    print("Saved!")
 
-while True:
-    message = input()
-    if message.lower() == "/quit":
-        break
-    sock.send(message.encode())
+def main():
+    config = load_config()
+    while True:
+        print("\n=== OpenChat ===")
+        print("1 - Connect")
+        print("2 - Settings")
+        print("0 - Exit")
+        choice = input(">> ")
+        if choice == "1":
+            connect_to_server(config)
+        elif choice == "2":
+            settings_menu(config)
+            config = load_config()
+        elif choice == "0":
+            break
+        else:
+            print("Error")
 
-sock.close()
+if __name__ == "__main__":
+    main()
