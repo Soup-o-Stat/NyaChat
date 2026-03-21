@@ -1,1 +1,7 @@
 config.json
+/build
+/dist
+openchat.exe
+OpenChat.rar
+openchat.spec
+/OpenChat
