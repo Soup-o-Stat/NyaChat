@@ -1,8 +1,11 @@
+# client.py
 import socket
 import threading
 import json
 import os
 import winsound
+from prompt_toolkit import PromptSession
+from prompt_toolkit.patch_stdout import patch_stdout
 
 CONFIG_FILE = "config.json"
 SOUND_FILE = "sounds//received.wav"
@@ -46,13 +49,18 @@ def connect_to_server(config):
     sock.send(f"/nick {config['nickname']}".encode())
     threading.Thread(target=listen, args=(sock,), daemon=True).start()
     print(f"Connected as {config['nickname']}")
-    while True:
-        message = input("")
-        if message.lower() == "/exit":
-            break
-        sock.send(message.encode())
-        if message.lower() == "/help":
-            print("\n/help - commands\n/list - users\n/exit - exit\n")
+    session = PromptSession("> ")
+    with patch_stdout():
+        while True:
+            try:
+                message = session.prompt()
+            except KeyboardInterrupt:
+                break
+            if message.lower() == "/exit":
+                break
+            sock.send(message.encode())
+            if message.lower() == "/help":
+                print("\n/help - commands\n/list - users\n/exit - exit\n")
     sock.close()
 
 def settings_menu(config):
