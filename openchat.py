@@ -39,7 +39,6 @@ def connect_to_server(config):
     if not config["ip"]:
         print("IP is not set")
         return
-
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((config["ip"], 1234))
@@ -59,7 +58,6 @@ def connect_to_server(config):
         pass
     sock.send(f"/nick {config['nickname']}".encode())
     threading.Thread(target=listen, args=(sock,), daemon=True).start()
-
     print(f"Connected as {config['nickname']}")
     session = PromptSession("> ")
     with patch_stdout():

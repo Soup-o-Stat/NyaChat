@@ -6,6 +6,7 @@ server_running = True
 server = None
 server_password = ""
 
+
 def broadcast(message, exclude=None):
     for client in list(clients.keys()):
         if client != exclude:
@@ -42,7 +43,6 @@ def handle_client(client_socket, addr):
             message = client_socket.recv(1024).decode()
             if not message:
                 break
-
             if message.strip().lower() == "/list":
                 user_list = "\n".join(clients.values())
                 client_socket.send(
@@ -70,7 +70,7 @@ def server_menu():
         return True
     elif choice == "2":
         server_password = input("Enter new server password (empty = no password): ").strip()
-        print(f"Password set: {'<none>' if server_password=='' else server_password}")
+        print(f"Password set: {'<none>' if server_password == '' else server_password}")
     elif choice == "0":
         server_running = False
         return False
@@ -84,19 +84,14 @@ def start_server():
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind(("0.0.0.0", 1234))
         server.listen()
-        server.settimeout(1)
         print("Server started. Port - 1234")
-
         while server_running:
-            try:
-                client_socket, addr = server.accept()
-                threading.Thread(
-                    target=handle_client,
-                    args=(client_socket, addr),
-                    daemon=True
-                ).start()
-            except socket.timeout:
-                continue
+            client_socket, addr = server.accept()
+            threading.Thread(
+                target=handle_client,
+                args=(client_socket, addr),
+                daemon=True
+            ).start()
     except KeyboardInterrupt:
         print("\nShutting down server...")
     finally:
