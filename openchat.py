@@ -1,4 +1,3 @@
-# client.py
 import socket
 import threading
 import json
@@ -12,7 +11,7 @@ SOUND_FILE = "sounds//received.wav"
 
 def load_config():
     if not os.path.exists(CONFIG_FILE):
-        return {"ip": "", "nickname": "anon"}
+        return {"ip": "", "nickname": "anon", "password": ""}
     with open(CONFIG_FILE, "r") as f:
         return json.load(f)
 
@@ -40,14 +39,27 @@ def connect_to_server(config):
     if not config["ip"]:
         print("IP is not set")
         return
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((config["ip"], 1234))
     except:
         print("Couldn't connect")
         return
+    try:
+        initial_msg = sock.recv(1024).decode()
+        if initial_msg.startswith("[SYSTEM] Enter server password:"):
+            sock.send(config.get("password", "").encode())
+            resp = sock.recv(1024).decode()
+            if "Wrong password" in resp:
+                print(resp)
+                sock.close()
+                return
+    except:
+        pass
     sock.send(f"/nick {config['nickname']}".encode())
     threading.Thread(target=listen, args=(sock,), daemon=True).start()
+
     print(f"Connected as {config['nickname']}")
     session = PromptSession("> ")
     with patch_stdout():
@@ -67,8 +79,10 @@ def settings_menu(config):
     print("=== Settings ===")
     ip = input("Enter server IP: ")
     nickname = input("Enter your nickname: ")
+    password = input("Enter server password (if any): ")
     config["ip"] = ip
     config["nickname"] = nickname
+    config["password"] = password
     save_config(config)
     print("Saved!")
 
