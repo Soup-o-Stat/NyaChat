@@ -1,6 +1,6 @@
-# OpenChat
+# NyaChat
 
-**OpenChat** is a simple terminal-based chat application built with Python. It allows multiple users to connect to a server, exchange messages in real-time, and optionally use a server password for security. The client features sound notifications for incoming messages and supports nickname customization
+**NyaChat** is a simple terminal-based chat application built with Python. It allows multiple users to connect to a server, exchange messages in real-time, and optionally use a server password for security. The client features sound notifications for incoming messages and supports nickname customization
 
 ## Features
 
@@ -28,7 +28,7 @@ pip install prompt_toolkit
 ## Files
 
 * `server.py` – The server script. Handles multiple clients, broadcasting messages, and optional password protection
-* `openchat.py` – The client script. Connects to the server, sends/receives messages, and plays notification sounds
+* `nyachat.py` – The client script. Connects to the server, sends/receives messages, and plays notification sounds
 * `config.json` – Client configuration file (created automatically if missing)
 * `sounds/received.wav` – Notification sound for incoming messages
 
@@ -58,13 +58,13 @@ python server.py
 1. Run the client script:
 
 ```bash
-python openchat.py
+python nyachat.py
 ```
 
 2. Main menu:
 
 ```
-=== OpenChat ===
+=== NyaChat ===
 1 - Connect
 2 - Settings
 0 - Exit
