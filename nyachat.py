@@ -58,7 +58,7 @@ def connect_to_server(config):
         pass
     sock.send(f"/nick {config['nickname']}".encode())
     threading.Thread(target=listen, args=(sock,), daemon=True).start()
-    session = PromptSession("> ")
+    session = PromptSession(">> ")
     with patch_stdout():
         while True:
             try:
@@ -84,7 +84,7 @@ def settings_menu(config):
 def main():
     config = load_config()
     while True:
-        print("\n=== OpenChat ===")
+        print("\n=== NyaChat :3 ===")
         print("1 - Connect")
         print("2 - Settings")
         print("0 - Exit")
