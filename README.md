@@ -1,4 +1,4 @@
-# NyaChat
+# NyaChat :3
 
 **NyaChat** is a simple terminal-based chat application built with Python. It allows multiple users to connect to a server, exchange messages in real-time, and optionally use a server password for security. The client features sound notifications for incoming messages and supports nickname customization
 
