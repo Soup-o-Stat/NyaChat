@@ -8,6 +8,7 @@ import subprocess
 clients = {}
 server = None
 server_password = ""
+server_port = 8080
 
 def broadcast(message, exclude=None):
     for client in list(clients.keys()):
@@ -60,37 +61,40 @@ def handle_client(client_socket, addr):
     print(f"{nickname} left the chat")
 
 def server_menu():
-    global server_password
+    global server_password, server_port
     while True:
         print("\n=== Server Menu ===")
         print("1 - Start server")
-        print("2 - Set password")
+        print("2 - Set port")
+        print("3 - Set password")
         print("0 - Exit")
         choice = input(">> ")
         if choice == "1":
             return True
         elif choice == "2":
+            server_port = input("Input your port: ")
+        elif choice == "3":
             server_password = input("Enter new server password (empty = no password): ").strip()
             print("Password updated")
         elif choice == "0":
             return False
 
 def start_server():
-    global server
+    global server, server_port
 
-    print("Cleaning up port 1234...")
+    print(f"Cleaning up port {server_port}...")
     try:
-        subprocess.run(['fuser', '-k', '1234/tcp'], capture_output=True)
+        subprocess.run(['fuser', '-k', f'{server_port}/tcp'], capture_output=True)
         time.sleep(1)
     except:
         pass
     try:
-        print("Starting server on port 1234...")
+        print(f"Starting server on port {server_port}...")
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server.bind(("0.0.0.0", 1234))
+        server.bind(("0.0.0.0", int(server_port)))
         server.listen()
-        print(f"Server started successfully on port 1234")
+        print(f"Server started successfully on port {server_port}")
         print("Press Ctrl+C to stop server\n")
         while True:
             server.settimeout(1.0)

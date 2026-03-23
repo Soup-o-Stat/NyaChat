@@ -41,7 +41,7 @@ def connect_to_server(config):
         return
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        sock.connect((config["ip"], 1234))
+        sock.connect((config["ip"], config["port"]))
     except:
         print("Couldn't connect")
         return
@@ -73,11 +73,13 @@ def connect_to_server(config):
     sock.close()
 
 def settings_menu(config):
-    ip = input("Enter server IP: ")
+    ip = input("Enter server IP (without port): ")
+    port = input("Enter port: ")
     nickname = input("Enter your nickname: ")
     password = input("Enter server password (if any): ")
     config["ip"] = ip
     config["nickname"] = nickname
+    config["port"] = port
     config["password"] = password
     save_config(config)
 
